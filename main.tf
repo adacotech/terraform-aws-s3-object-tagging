@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_lambda_function" "main" {
   filename         = data.archive_file.package.output_path
   function_name    = "${var.nameprefix}-function"
@@ -38,6 +40,7 @@ resource "aws_lambda_permission" "allow_bucket" {
   function_name       = aws_lambda_function.main.arn
   principal           = "s3.amazonaws.com"
   source_arn          = data.aws_s3_bucket.target.arn
+  source_account      = data.aws_caller_identity.current.account_id
 }
 
 resource "aws_s3_bucket_notification" "notification" {
